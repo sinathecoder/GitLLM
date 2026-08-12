@@ -57,7 +57,7 @@ EMBEDDING_MODEL = "ONNXMiniLM_L6_V2"
 # ============================================================
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 GEMINI_API_KEY = os.environ.get(
-    "GEMINI_API_KEY", "AQ.Ab8RN6IdgLzFMViYHrHa8QpptA3o71fO2CZ4gsPNFPxfxKFopw"
+    "GEMINI_API_KEY", "[gemni-code]"
 )
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
 GEMINI_TEMPERATURE = 0.2
