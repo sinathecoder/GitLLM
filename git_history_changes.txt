@@ -1,0 +1,1217 @@
+========================================
+GIT HISTORY REPORT — WITH ALL CHANGES
+========================================
+Repository: /Users/sinajamshidi/Projects/RecommenderEngine
+Generated:  2026-08-10 13:09:53
+Total commits: 5
+
+----------------------------------------
+REMOTES
+----------------------------------------
+origin	https://marjprojects.visualstudio.com/MyFirstProject/_git/RecommenderEngine (fetch)
+origin	https://marjprojects.visualstudio.com/MyFirstProject/_git/RecommenderEngine (push)
+
+
+----------------------------------------
+BRANCHES
+----------------------------------------
+* master
+  remotes/origin/master
+
+
+----------------------------------------
+COMMIT HISTORY WITH ALL CODE CHANGES (diffs)
+----------------------------------------
+============================================================
+Commit: 22285e39288453f75bed0f573fe7be7c48af2b90
+Abbreviated: 22285e3
+Author: Sina J <sjam3000@yahoo.com>
+Date: 2018-04-03 14:15:08 -0400
+Subject: fixed running issues
+Body:
+============================================================
+diff --git a/pom.xml b/pom.xml
+index fc465a1..e9ca7ad 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -20,41 +20,35 @@
+     </plugins>
+   </build>
+     <dependencies>
+-
++        <!--<dependency>-->
++            <!--<groupId>org.elasticsearch</groupId>-->
++            <!--<artifactId>elasticsearch-spark-20_2.11</artifactId>-->
++            <!--<version>6.1.1</version>-->
++        <!--</dependency>-->
++        <!--<dependency>-->
++            <!--<groupId>databricks</groupId>-->
++            <!--<artifactId>spark-corenlp</artifactId>-->
++            <!--<version>0.2.0-s_2.11</version>-->
++        <!--</dependency>-->
+         <dependency>
+             <groupId>org.apache.spark</groupId>
+             <artifactId>spark-core_2.11</artifactId>
+-            <version>2.0.0</version>
++            <version>2.2.0</version>
+         </dependency>
+-
+         <dependency>
+-            <groupId>org.elasticsearch</groupId>
+-            <artifactId>elasticsearch-spark-20_2.11</artifactId>
+-            <version>6.1.1</version>
++            <groupId>org.apache.spark</groupId>
++            <artifactId>spark-sql_2.11</artifactId>
++            <version>2.2.0</version>
++        </dependency>
++        <dependency>
++            <groupId>org.apache.spark</groupId>
++            <artifactId>spark-mllib_2.11</artifactId>
++            <version>2.2.0</version>
+         </dependency>
+-
+-       <dependency>
+-           <groupId>org.apache.spark</groupId>
+-           <artifactId>spark-sql_2.11</artifactId>
+-           <version>2.2.1</version>
+-       </dependency>
+-
+-       <dependency>
+-           <groupId>org.apache.spark</groupId>
+-           <artifactId>spark-mllib_2.11</artifactId>
+-           <version>2.2.1</version>
+-       </dependency>
+-
+-       <dependency>
+-           <groupId>com.github.master</groupId>
+-           <artifactId>spark-stemming_2.10</artifactId>
+-           <version>0.2.0</version>
+-       </dependency>
+-
+         <dependency>
+-            <groupId>org.twitter4j</groupId>
+-            <artifactId>twitter4j-stream</artifactId>
+-            <version>4.0.4</version>
++            <groupId>com.github.master</groupId>
++            <artifactId>spark-stemming_2.10</artifactId>
++            <version>0.2.0</version>
+         </dependency>
+ 
+     </dependencies>
+diff --git a/src/main/scala/Test.scala b/src/main/scala/Test.scala
+index d6cf90c..3f3bf9c 100644
+--- a/src/main/scala/Test.scala
++++ b/src/main/scala/Test.scala
+@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+ import org.apache.spark.ml.clustering.KMeans
+ import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
++import org.apache.spark.mllib.feature.Stemmer
+ import org.apache.spark.sql.{SaveMode, SparkSession}
+ 
+ object Test {
+diff --git a/src/main/scala/TestEMLDA.scala b/src/main/scala/TestEMLDA.scala
+index a16c457..b394f1f 100644
+--- a/src/main/scala/TestEMLDA.scala
++++ b/src/main/scala/TestEMLDA.scala
+@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+ import org.apache.spark.ml.clustering.BisectingKMeans
+ import org.apache.spark.ml.feature._
++import org.apache.spark.mllib.feature.Stemmer
+ import org.apache.spark.sql.{SaveMode, SparkSession}
+ 
+ object TestEMLDA {
+diff --git a/src/main/scala/TestResult.scala b/src/main/scala/TestResult.scala
+index 0ca4ff5..e8f6d42 100644
+--- a/src/main/scala/TestResult.scala
++++ b/src/main/scala/TestResult.scala
+@@ -15,7 +15,6 @@ object TestResult {
+     sc.setLogLevel("ERROR")
+     sqlContext.read.parquet("/home/cloudera/work/result/BisectingKMeans").registerTempTable("data")
+ 
+-
+     sqlContext.sql("select count(*) from data ").show()
+ 
+     sqlContext.sql("select prediction,url,description,features from data where prediction=3").show(false)
+diff --git a/src/main/scala/TestTFIDF.scala b/src/main/scala/TestTFIDF.scala
+index d60402b..6f12594 100644
+--- a/src/main/scala/TestTFIDF.scala
++++ b/src/main/scala/TestTFIDF.scala
+@@ -4,6 +4,7 @@ import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+ import org.apache.spark.ml.clustering.BisectingKMeans
+ import org.apache.spark.ml.feature._
++import org.apache.spark.mllib.feature.Stemmer
+ import org.apache.spark.sql.{SaveMode, SparkSession}
+ 
+ object TestTFIDF {
+diff --git a/src/main/scala/TrainingLDA.scala b/src/main/scala/TrainingLDA.scala
+index 3ef776a..aa14e93 100644
+--- a/src/main/scala/TrainingLDA.scala
++++ b/src/main/scala/TrainingLDA.scala
+@@ -1,7 +1,6 @@
+ 
+ import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+-import org.elasticsearch.spark.sql._
+ import org.apache.spark.ml.feature.StopWordsRemover
+ import org.apache.spark.sql.SparkSession
+ 
+@@ -11,110 +10,18 @@ object TrainingLDA {
+ 
+     val conf = new SparkConf().setAppName("readingfromES").setMaster("local[*]")
+ 
+-    val spark = new SparkSession.Builder()
+-      .appName("SparkSessionZipsExample").config(conf)
++    val spark = SparkSession.builder()
++      .config(conf)
+       .getOrCreate()
+ 
+     val corpus = spark
+       .read
+       .format("org.apache.spark.sql.execution.datasources.json.DefaultSource")
+-      .load("/Users/sinajamshidi/news-please-repo/data/2018/02/15/nytimes.com")
+-
++      //.load("/Users/sinajamshidi/news-please-repo/data/2018/02/15/nytimes.com")
++        .load("/home/cloudera/news-please-repo/data/2018/02/25/edition.cnn.com/*.json")
+     corpus.show()
+ 
+ 
+-		return
+-
+-//				val conf = new SparkConf().setAppName("readingfromES") .setMaster("local[*]")
+-//				conf.set("spark.es.nodes.wan.only","true")
+-//				conf.set("spark.es.nodes","52.151.31.143")
+-//				conf.set("spark.es.port","9200")
+-//				conf.set("spark.es.nodes.discovery","false")
+-//				conf.set("spark.es.net.http.auth.user","marjadmin")
+-//				conf.set("spark.es.net.http.auth.pass","Ryersonr@mz11")
+-//				conf.set("spark.es.index.read.missing.as.empty","true")
+-//				conf.set("es.batch.size.bytes", "300000000")
+-//				conf.set("es.batch.size.entries", "10000")
+-//				conf.set("es.batch.write.refresh", "false")
+-//				val sc = new SparkContext(conf)
+-//				val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+-//
+-//
+-//                val df = sqlContext.read.format("org.elasticsearch.spark.sql")
+-//				.option("es.read.field.as.array.include","authors") //including authors as array
+-//				.option("es.mapping.date.rich" ,"false") //solve date formats for as many date fields,When set "es.mapping.date.rich" to false, DataFrame schema not change to String or Long
+-//				.option("es.field.read.empty.as.null","true")
+-//				.option("es.index.read.missing.as.empty","true")
+-//				// .option("es.read.field.as.date.include","date_download || date_modify || date_publish")
+-//				.load("contentprofile/temptable")
+-//
+-//				import org.apache.spark.sql.functions._
+-//				import sqlContext.implicits._
+-//				import org.apache.spark.storage.StorageLevel
+-//
+-//         		df.registerTempTable("tftbl")
+-//
+-//				val res=sqlContext.sql("select * from tftbl")
+-//
+-//                //preparing all json schema for all the fetched document to be put in the pipleline
+-//                	val documents = res.withColumn("allFields",concat_ws(" ",res.col("authors"),res.col("date_download"),res.col("date_modify"),
+-//						res.col("date_publish"),regexp_replace(res.col("description"), "[^a-zA-Z0-9]", " "), res.col("image_url"),res.col("language")
+-//						,res.col("source_domain"),
+-//						regexp_replace(res.col("text"), "[^([A-Z]|[0-9]|[a-z])+$)]",""),
+-//                        //may be this regex is extra as I am using an annotator in the piepline below to remove punctuations etc
+-//                        res.col("title")
+-//					, res.col("title_page"),res.col("title_rss"),res.col("url"))   )
+-//
+-//                //below you wil find couple of annotators as described here http://nlp.johnsnowlabs.com/components.html
+-//                //1. annotating raw data
+-//                val documentAssembler = new DocumentAssembler().setInputCol("allFields").setOutputCol("document")
+-//
+-//               //2. finding sentences
+-//				val sentenceDetector = new SentenceDetectorModel().setInputCols(Array("document")).setOutputCol("sentence")
+-//
+-//                //3. regex annotator
+-//				val regexTokenizer = new RegexTokenizer().setInputCols(Array("sentence")).setOutputCol("token")
+-//
+-//            	//4.stopword remover
+-//                val stopWords = new StopWordsRemover()
+-//				.setInputCol("token")
+-//				.setOutputCol("token")
+-//
+-//            	//5.removing dirty text
+-//                val normalize = new Normalizer().setInputCols(Array("token")).setOutputCol("token")
+-//
+-//            	//6. stemming ,snowball
+-//                val  stem = new Stemmer().setInputCols(Array("token")).setOutputCol("token")
+-//
+-//                //7. lemmating the text
+-//				val lemma = new Lemmatizer().setInputCols(Array("token")).setOutputCol("token").setLemmaDict("C:\\Users\\Syed\\workspace3\\marjES\\lemmas.txt")
+-//
+-//                //8. part of speech tagging, using a built in dictionary, I have uploaded dictionary in the same contentprofile marj git
+-//
+-//				val posTagger = new PerceptronApproach().setInputCols(Array("sentence", "token")).setOutputCol("pos").setOutputCol("pos").setCorpusPath("C:\\Users\\Syed\\workspace3\\marjES\\pos.txt")
+-//
+-//               //9. ready to use results
+-//               	val finisher = new Finisher().setInputCols("pos").setValueSplitSymbol(" ").setAnnotationSplitSymbol(",").setOutputCols("finished")
+-//				.setCleanAnnotations(true)
+-//				.setIncludeKeys(true)
+-//
+-//                //pipeline all annotators
+-//                val pipeline = new Pipeline().setStages(Array(
+-//						documentAssembler,
+-//						sentenceDetector,
+-//						regexTokenizer,
+-//						posTagger,
+-//						finisher
+-//						))
+-//
+-//                documents.show()
+-//
+-//                pipeline.fit(documents).transform(documents).select("*")
+-//				.saveToEs("contentprofile/POS")
+-//				//.show(10,false)
+-//
+-
+-
+ 
+ 
+ 	}
+
+============================================================
+Commit: eefdc123e2704fbf94ab966d5da41540c5ab7f37
+Abbreviated: eefdc12
+Author: Sina J <sjam3000@yahoo.com>
+Date: 2018-04-03 12:12:59 -0400
+Subject: Fixed install issue
+Body:
+============================================================
+diff --git a/pom.xml b/pom.xml
+index f07783c..fc465a1 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -19,100 +19,43 @@
+       </plugin>
+     </plugins>
+   </build>
+-   <dependencies>
+-   
+-<dependency>
+-    <groupId>org.apache.spark</groupId>
+-    <artifactId>spark-core_2.11</artifactId>
+-    <version>2.0.0</version>
+-</dependency>
+-<dependency>
+-  <groupId>com.johnsnowlabs.nlp</groupId>
+-  <artifactId>spark-nlp_2.11</artifactId>
+-  <version>1.2.3</version>
+-</dependency>
+-
+-<!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-spark-20 -->
+-<dependency>
+-    <groupId>org.elasticsearch</groupId>
+-    <artifactId>elasticsearch-spark-20_2.11</artifactId>
+-    <version>6.1.1</version>
+-</dependency>
+-<!-- <dependency>
+-    <groupId>org.elasticsearch</groupId>
+-    <artifactId>elasticsearch-spark-20_2.11</artifactId>
+-    <version>5.6.3</version>
+-</dependency> -->
+-
+-
+-<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+-<dependency>
+-    <groupId>org.apache.spark</groupId>
+-    <artifactId>spark-sql_2.11</artifactId>
+-    <version>2.0.0</version>
+-</dependency>
+-<dependency>
+-    <groupId>com.google.code.gson</groupId>
+-    <artifactId>gson</artifactId>
+-    <version>2.8.0</version>
+-</dependency>
+-
+-<!-- https://mvnrepository.com/artifact/com.databricks/spark-csv -->
+-<dependency>
+-    <groupId>com.databricks</groupId>
+-    <artifactId>spark-csv_2.11</artifactId>
+-    <version>1.5.0</version>
+-</dependency>
+-
+-<!-- https://mvnrepository.com/artifact/com.github.pathikrit/better-files -->
+-<dependency>
+-    <groupId>com.github.pathikrit</groupId>
+-    <artifactId>better-files_2.11</artifactId>
+-    <version>2.16.0</version>
+-</dependency>
+-
+- <dependency>
+-    <groupId>edu.stanford.nlp</groupId>
+-    <artifactId>stanford-corenlp</artifactId>
+-    <version>3.8.0</version>
+-</dependency>
+-
+-
+-<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-mllib -->
+-<dependency>
+-    <groupId>org.apache.spark</groupId>
+-    <artifactId>spark-mllib_2.11</artifactId>
+-    <version>2.0.0</version>
+-    <scope>provided</scope>
+-</dependency>
+-<dependency>
+-    <groupId>edu.stanford.nlp</groupId>
+-    <artifactId>stanford-corenlp</artifactId>
+-    <version>3.8.0</version>
+-    <classifier>models</classifier>
+-</dependency>
+-<dependency>
+- <groupId>edu.stanford.nlp</groupId>
+- <artifactId>stanford-parser</artifactId>
+- <version>3.8.0</version>
+-</dependency>
+-<dependency>
+-    <groupId>org.apache.bahir</groupId>
+-    <artifactId>spark-streaming-twitter_2.11</artifactId>
+-    <version>2.0.0-preview</version>
+-</dependency>
+-<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-flume -->
+-<dependency>
+-    <groupId>org.apache.spark</groupId>
+-    <artifactId>spark-streaming-flume_2.10</artifactId>
+-    <version>0.9.0-incubating</version>
+-</dependency>
+-<!-- https://mvnrepository.com/artifact/org.twitter4j/twitter4j-stream -->
+-<dependency>
+-    <groupId>org.twitter4j</groupId>
+-    <artifactId>twitter4j-stream</artifactId>
+-    <version>4.0.4</version>
+-</dependency>
++    <dependencies>
++
++        <dependency>
++            <groupId>org.apache.spark</groupId>
++            <artifactId>spark-core_2.11</artifactId>
++            <version>2.0.0</version>
++        </dependency>
++
++        <dependency>
++            <groupId>org.elasticsearch</groupId>
++            <artifactId>elasticsearch-spark-20_2.11</artifactId>
++            <version>6.1.1</version>
++        </dependency>
++
++       <dependency>
++           <groupId>org.apache.spark</groupId>
++           <artifactId>spark-sql_2.11</artifactId>
++           <version>2.2.1</version>
++       </dependency>
++
++       <dependency>
++           <groupId>org.apache.spark</groupId>
++           <artifactId>spark-mllib_2.11</artifactId>
++           <version>2.2.1</version>
++       </dependency>
++
++       <dependency>
++           <groupId>com.github.master</groupId>
++           <artifactId>spark-stemming_2.10</artifactId>
++           <version>0.2.0</version>
++       </dependency>
++
++        <dependency>
++            <groupId>org.twitter4j</groupId>
++            <artifactId>twitter4j-stream</artifactId>
++            <version>4.0.4</version>
++        </dependency>
+ 
+     </dependencies>
+ </project>
+\ No newline at end of file
+diff --git a/src/main/scala/Test.scala b/src/main/scala/Test.scala
+index 6afdce7..d6cf90c 100644
+--- a/src/main/scala/Test.scala
++++ b/src/main/scala/Test.scala
+@@ -1,8 +1,10 @@
++package main.scala
++
++import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+ import org.apache.spark.ml.clustering.KMeans
+ import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
+ import org.apache.spark.sql.{SaveMode, SparkSession}
+-import org.apache.spark.{SparkConf, SparkContext, mllib}
+ 
+ object Test {
+ 
+@@ -57,8 +59,6 @@ object Test {
+ //    spark.sql("select * from data where length(text) > 1000").write.mode(SaveMode.Overwrite).parquet("/home/cloudera/work/result/data")
+ //return
+ 
+-    import org.apache.spark.mllib.feature.Stemmer
+-
+     val tokenizer = new Tokenizer()
+       .setInputCol("text")
+       .setOutputCol("words")
+diff --git a/src/main/scala/TestEMLDA.scala b/src/main/scala/TestEMLDA.scala
+index 85bf400..a16c457 100644
+--- a/src/main/scala/TestEMLDA.scala
++++ b/src/main/scala/TestEMLDA.scala
+@@ -1,8 +1,9 @@
++package main.scala
++
+ import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+ import org.apache.spark.ml.clustering.BisectingKMeans
+ import org.apache.spark.ml.feature._
+-import org.apache.spark.mllib.feature.Stemmer
+ import org.apache.spark.sql.{SaveMode, SparkSession}
+ 
+ object TestEMLDA {
+diff --git a/src/main/scala/TestKeywords.scala b/src/main/scala/TestKeywords.scala
+index 46cf5cf..25fb5f8 100644
+--- a/src/main/scala/TestKeywords.scala
++++ b/src/main/scala/TestKeywords.scala
+@@ -1,10 +1,12 @@
++package main.scala
++
+ import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+ import org.apache.spark.ml.clustering.BisectingKMeans
+ import org.apache.spark.ml.feature._
+ import org.apache.spark.mllib.feature.Stemmer
+-import org.apache.spark.sql.{SaveMode, SparkSession}
+ import org.apache.spark.sql.functions._
++import org.apache.spark.sql.{SaveMode, SparkSession}
+ 
+ object TestKeywords {
+ 
+@@ -35,10 +37,10 @@ object TestKeywords {
+ 
+     println(s"Number of documents is:${corpus.count()}")
+ 
+-    val output = corpus.select(cleanxml('text).as('doc))
+-      .select(explode(ssplit('doc)).as('sen))
+-      .select('sen, tokenize('sen).as('words), ner('sen).as('nerTags), sentiment('sen).as('sentiment))
+-
++//    val output = corpus.select(cleanxml('text).as('doc))
++//      .select(explode(ssplit('doc)).as('sen))
++//      .select('sen, tokenize('sen).as('words), ner('sen).as('nerTags), sentiment('sen).as('sentiment))
++//
+ 
+     val tokenizer = new Tokenizer()
+       .setInputCol("text")
+diff --git a/src/main/scala/TestResult.scala b/src/main/scala/TestResult.scala
+index 61b5c7d..0ca4ff5 100644
+--- a/src/main/scala/TestResult.scala
++++ b/src/main/scala/TestResult.scala
+@@ -1,3 +1,5 @@
++package main.scala
++
+ import org.apache.spark.{SparkConf, SparkContext}
+ 
+ object TestResult {
+diff --git a/src/main/scala/TestTFIDF.scala b/src/main/scala/TestTFIDF.scala
+index f3f3dbd..d60402b 100644
+--- a/src/main/scala/TestTFIDF.scala
++++ b/src/main/scala/TestTFIDF.scala
+@@ -1,10 +1,9 @@
+-import org.apache.spark
+-import org.apache.spark.{SparkConf, SparkContext}
++package main.scala
++
++import org.apache.spark.SparkConf
+ import org.apache.spark.ml.Pipeline
+-import org.apache.spark.ml.clustering.{BisectingKMeans, KMeans}
++import org.apache.spark.ml.clustering.BisectingKMeans
+ import org.apache.spark.ml.feature._
+-import org.apache.spark.mllib.feature.Stemmer
+-import org.apache.spark.mllib.linalg.Vectors
+ import org.apache.spark.sql.{SaveMode, SparkSession}
+ 
+ object TestTFIDF {
+
+============================================================
+Commit: c674828aacaff31292443eb49b47eabb086eb6bd
+Abbreviated: c674828
+Author: Sina J <sjam3000@yahoo.com>
+Date: 2018-04-03 11:58:24 -0400
+Subject: Added Different clustering methods
+Body:
+============================================================
+diff --git a/src/main/scala/Test.scala b/src/main/scala/Test.scala
+new file mode 100644
+index 0000000..6afdce7
+--- /dev/null
++++ b/src/main/scala/Test.scala
+@@ -0,0 +1,111 @@
++import org.apache.spark.ml.Pipeline
++import org.apache.spark.ml.clustering.KMeans
++import org.apache.spark.ml.feature.{HashingTF, Tokenizer}
++import org.apache.spark.sql.{SaveMode, SparkSession}
++import org.apache.spark.{SparkConf, SparkContext, mllib}
++
++object Test {
++
++  def main(args: Array[String]): Unit = {
++
++    val sparkConf = new SparkConf()
++      .setAppName("test")
++      .set("spark.driver.memory","2g")
++      .set("spark.executor.instances","3")
++      .set("spark.executor.cores","2")
++      .set("spark.executor.memory","4g")
++      //.setMaster("local[200]")
++      .setMaster("spark://192.168.0.17:7077")   //   .setMaster("local[500]")
++//../spark-2.2.1-bin-hadoop2.7/bin/spark-submit --master spark://192.168.0.17:7077  --class=Test  --packages com.github.master:spark-stemming_2.10:0.2.0 --num-executors=1 --executor-cores=2 target/my-app-1.0.jar
++
++    val spark = SparkSession
++      .builder()
++      .config(sparkConf)
++      .getOrCreate()
++    //  val data = sc.textFile("/Users/sinajamshidi/news-please-repo/data/2018/02/25/news.blogs.cnn.com/013_03_04__1519571533.html.json")
++
++    //    data.collect()
++    //    val conf = new SparkConf().setAppName("LDA").setMaster("local")
++    //    val sc = new SparkContext(conf)
++    //    val stopWordsList = sc.textFile("C:\\Users\\Syed\\workspace1\\marjproject1\\target\\stopwords.txt")
++    //    val stopWords = stopWordsList.collect.toSet
++    //
++    //    sc.textFile("")
++
++    val corpus = spark
++      .read.format("org.apache.spark.sql.execution.datasources.json.DefaultSource")
++    //  .load("file:///home/simplilearn/news-please-repo/data/2018/03/10/*/*.json").registerTempTable("data")
++      .load("file:///media/sf_News-Data/data/2018/02/25/*/*.json").registerTempTable("data")
++//
++    //.load("/Users/sinajamshidi/news-please-repo/data/2018/02/25/news.blogs.cnn.com/*.json")
++    //  .load("/home/cloudera/news-please-repo/data/2018/*/*/*/*.json").registerTempTable("data")
++    //  .load("/home/cloudera/news-please-repo/data/2018/02/25/edition.cnn.com/*.json").registerTempTable("data")
++
++    //    corpus.select("text").show(10)
++
++    //    import com.johnsnowlabs.nlp.annotators.sbd.pragmatic.SentenceDetector
++    //    import com.johnsnowlabs.nlp._
++    //    import com.johnsnowlabs.nlp.annotators._
++    //    import org.apache.spark.ml.Pipeline
++
++    //    val documentAssembler = new DocumentAssembler()
++    //      .setInputCol("text")
++    //      .setOutputCol("document")
++
++
++
++//    spark.sql("select * from data where length(text) > 1000").write.mode(SaveMode.Overwrite).parquet("/home/cloudera/work/result/data")
++//return
++
++    import org.apache.spark.mllib.feature.Stemmer
++
++    val tokenizer = new Tokenizer()
++      .setInputCol("text")
++      .setOutputCol("words")
++
++    val stemmed = new Stemmer()
++      .setInputCol("words")
++      .setOutputCol("stemmed")
++
++    val hashingTF = new HashingTF()
++      .setInputCol("stemmed").setOutputCol("rawFeatures").setNumFeatures(300)
++
++    val pipeline = new Pipeline()
++      .setStages(Array(tokenizer, stemmed, hashingTF))
++
++    val corpus2 = spark.sql("select text,description,url from data where length(text) > 1000")
++
++    val transformed = pipeline
++      .fit(corpus2)
++      .transform(corpus2)
++    //      .show(10)
++
++    val kmeans = new KMeans().setK(100).setSeed(1L).setFeaturesCol("rawFeatures")
++
++    kmeans.fit(transformed).transform(transformed).select("description","text","prediction","url")
++      .write.mode(SaveMode.Overwrite).parquet("/home/cloudera/work/result/kmeans")
++
++
++
++    //    val pipeline = new mllib.Pipeline().setStages(Array(
++    //      docAssembler,
++    //      tokenizer,
++    //      stemmer,
++    //      stopWordRemover,
++    //      hasher,
++    //      idf,
++    //      dtree,
++    //      labelDeIndex))
++
++
++    //    corpus.show(10)
++
++    //
++    //    corpus.collect()
++
++    //
++    //    data.count()
++
++  }
++
++}
+diff --git a/src/main/scala/TestEMLDA.scala b/src/main/scala/TestEMLDA.scala
+new file mode 100644
+index 0000000..85bf400
+--- /dev/null
++++ b/src/main/scala/TestEMLDA.scala
+@@ -0,0 +1,71 @@
++import org.apache.spark.SparkConf
++import org.apache.spark.ml.Pipeline
++import org.apache.spark.ml.clustering.BisectingKMeans
++import org.apache.spark.ml.feature._
++import org.apache.spark.mllib.feature.Stemmer
++import org.apache.spark.sql.{SaveMode, SparkSession}
++
++object TestEMLDA {
++
++  def main(args: Array[String]): Unit = {
++
++    val sparkConf = new SparkConf().setAppName("testTFIDF")
++//      .set("spark.driver.memory","2g")
++      .set("spark.executor.instances","3")
++      .set("spark.executor.cores","2")
++      .set("spark.executor.memory","4g")
++      .setMaster("spark://192.168.0.17:7077")   //   .setMaster("local[500]")
++//      .setMaster("local")
++
++    val spark = SparkSession
++      .builder()
++      .config(sparkConf)
++      .getOrCreate()
++
++
++    //sc.setLogLevel("ERROR")
++//    val corpus = spark
++//      .read.format("org.apache.spark.sql.execution.datasources.json.DefaultSource")
++//      .load("/home/cloudera/news-please-repo/data/2018/02/25/edition.cnn.com/*.json").registerTempTable("data")
++  //    .load("file:///media/sf_News-Data/data/2018/02/25/cnn.com/2009_CRIME_11_18_andrews.stalker.court_index_1519628117.html.json").createOrReplaceTempView("data")
++ //     .load("file:///media/sf_News-Data/data/2018/02/25/cnn.com/*.json").createOrReplaceTempView("data")
++
++    val corpus = spark.read.parquet("/home/cloudera/work/result/data")//.repartition(10000)
++//    val corpus2 = spark.sql("select text,description,url from data where length(text) > 1000 ")
++
++    println(s"Number of documents is:${corpus.count()}")
++
++    val tokenizer = new Tokenizer()
++      .setInputCol("text")
++      .setOutputCol("words")
++
++    val stemmed = new Stemmer()
++      .setInputCol("words")
++      .setOutputCol("stemmed")
++
++    val countVec = new HashingTF().setNumFeatures(1000)
++      .setInputCol("stemmed").setOutputCol("rawFeatures")
++
++    val idf = new IDF().setInputCol("rawFeatures").setOutputCol("features")
++
++    val pipeline = new Pipeline()
++      .setStages(Array(tokenizer, stemmed, countVec,idf))
++
++    val transformed = pipeline
++      .fit(corpus)
++      .transform(corpus)
++    //      .show(10)
++
++//    transformed.show(10)
++
++    val kmeans = new BisectingKMeans().setK(200).setSeed(1L).setFeaturesCol("features")
++
++    kmeans.save("/home/cloudera/work/result/kmeans-BisectingKMeans-model")
++
++    kmeans.fit(transformed).transform(transformed).select("features","description","text","prediction","url")
++      .write.mode(SaveMode.Overwrite).parquet("/home/cloudera/work/result/BisectingKMeans")
++
++  }
++
++
++}
+diff --git a/src/main/scala/TestKeywords.scala b/src/main/scala/TestKeywords.scala
+new file mode 100644
+index 0000000..46cf5cf
+--- /dev/null
++++ b/src/main/scala/TestKeywords.scala
+@@ -0,0 +1,76 @@
++import org.apache.spark.SparkConf
++import org.apache.spark.ml.Pipeline
++import org.apache.spark.ml.clustering.BisectingKMeans
++import org.apache.spark.ml.feature._
++import org.apache.spark.mllib.feature.Stemmer
++import org.apache.spark.sql.{SaveMode, SparkSession}
++import org.apache.spark.sql.functions._
++
++object TestKeywords {
++
++  def main(args: Array[String]): Unit = {
++
++    val sparkConf = new SparkConf().setAppName("testTFIDF")
++//      .set("spark.driver.memory","2g")
++      .set("spark.executor.instances","3")
++      .set("spark.executor.cores","2")
++      .set("spark.executor.memory","4g")
++//      .setMaster("spark://192.168.0.17:7077")   //   .setMaster("local[500]")
++      .setMaster("local")
++
++    val spark = SparkSession
++      .builder()
++      .config(sparkConf)
++      .getOrCreate()
++
++    //sc.setLogLevel("ERROR")
++//    val corpus = spark
++//      .read.format("org.apache.spark.sql.execution.datasources.json.DefaultSource")
++//      .load("/home/cloudera/news-please-repo/data/2018/02/25/edition.cnn.com/*.json").registerTempTable("data")
++  //    .load("file:///media/sf_News-Data/data/2018/02/25/cnn.com/2009_CRIME_11_18_andrews.stalker.court_index_1519628117.html.json").createOrReplaceTempView("data")
++ //     .load("file:///media/sf_News-Data/data/2018/02/25/cnn.com/*.json").createOrReplaceTempView("data")
++
++    val corpus = spark.read.parquet("/home/cloudera/work/result/data")//.repartition(10000)
++//    val corpus2 = spark.sql("select text,description,url from data where length(text) > 1000 ")
++
++    println(s"Number of documents is:${corpus.count()}")
++
++    val output = corpus.select(cleanxml('text).as('doc))
++      .select(explode(ssplit('doc)).as('sen))
++      .select('sen, tokenize('sen).as('words), ner('sen).as('nerTags), sentiment('sen).as('sentiment))
++
++
++    val tokenizer = new Tokenizer()
++      .setInputCol("text")
++      .setOutputCol("words")
++
++    val stemmed = new Stemmer()
++      .setInputCol("words")
++      .setOutputCol("stemmed")
++
++    val countVec = new HashingTF().setNumFeatures(1000)
++      .setInputCol("stemmed").setOutputCol("rawFeatures")
++
++    val idf = new IDF().setInputCol("rawFeatures").setOutputCol("features")
++
++    val pipeline = new Pipeline()
++      .setStages(Array(tokenizer, stemmed, countVec,idf))
++
++    val transformed = pipeline
++      .fit(corpus)
++      .transform(corpus)
++    //      .show(10)
++
++//    transformed.show(10)
++
++    val kmeans = new BisectingKMeans().setK(200).setSeed(1L).setFeaturesCol("features")
++
++    kmeans.save("/home/cloudera/work/result/kmeans-BisectingKMeans-model")
++
++    kmeans.fit(transformed).transform(transformed).select("features","description","text","prediction","url")
++      .write.mode(SaveMode.Overwrite).parquet("/home/cloudera/work/result/BisectingKMeans")
++
++  }
++
++
++}
+diff --git a/src/main/scala/TestResult.scala b/src/main/scala/TestResult.scala
+new file mode 100644
+index 0000000..61b5c7d
+--- /dev/null
++++ b/src/main/scala/TestResult.scala
+@@ -0,0 +1,25 @@
++import org.apache.spark.{SparkConf, SparkContext}
++
++object TestResult {
++
++  def main(args: Array[String]): Unit = {
++
++    val sparkConf = new SparkConf()
++      .setAppName("ChecktheResults")
++        .setMaster("local")
++    val sc = new SparkContext(sparkConf)
++    val sqlContext = new org.apache.spark.sql.SQLContext(sc)
++
++    sc.setLogLevel("ERROR")
++    sqlContext.read.parquet("/home/cloudera/work/result/BisectingKMeans").registerTempTable("data")
++
++
++    sqlContext.sql("select count(*) from data ").show()
++
++    sqlContext.sql("select prediction,url,description,features from data where prediction=3").show(false)
++
++
++
++  }
++
++}
+diff --git a/src/main/scala/TestTFIDF.scala b/src/main/scala/TestTFIDF.scala
+new file mode 100644
+index 0000000..f3f3dbd
+--- /dev/null
++++ b/src/main/scala/TestTFIDF.scala
+@@ -0,0 +1,75 @@
++import org.apache.spark
++import org.apache.spark.{SparkConf, SparkContext}
++import org.apache.spark.ml.Pipeline
++import org.apache.spark.ml.clustering.{BisectingKMeans, KMeans}
++import org.apache.spark.ml.feature._
++import org.apache.spark.mllib.feature.Stemmer
++import org.apache.spark.mllib.linalg.Vectors
++import org.apache.spark.sql.{SaveMode, SparkSession}
++
++object TestTFIDF {
++
++  def main(args: Array[String]): Unit = {
++
++    val sparkConf = new SparkConf().setAppName("testTFIDF")
++//      .set("spark.driver.memory","2g")
++      .set("spark.executor.instances","3")
++      .set("spark.executor.cores","2")
++      .set("spark.executor.memory","4g")
++      .setMaster("spark://192.168.0.17:7077")   //   .setMaster("local[500]")
++//      .setMaster("local")
++
++
++
++    val spark = SparkSession
++      .builder()
++      .config(sparkConf)
++      .getOrCreate()
++
++
++    //sc.setLogLevel("ERROR")
++//    val corpus = spark
++//      .read.format("org.apache.spark.sql.execution.datasources.json.DefaultSource")
++//      .load("/home/cloudera/news-please-repo/data/2018/02/25/edition.cnn.com/*.json").registerTempTable("data")
++  //    .load("file:///media/sf_News-Data/data/2018/02/25/cnn.com/2009_CRIME_11_18_andrews.stalker.court_index_1519628117.html.json").createOrReplaceTempView("data")
++ //     .load("file:///media/sf_News-Data/data/2018/02/25/cnn.com/*.json").createOrReplaceTempView("data")
++
++    val corpus = spark.read.parquet("/home/cloudera/work/result/data")//.repartition(10000)
++//    val corpus2 = spark.sql("select text,description,url from data where length(text) > 1000 ")
++
++    println(s"Number of documents is:${corpus.count()}")
++
++    val tokenizer = new Tokenizer()
++      .setInputCol("text")
++      .setOutputCol("words")
++
++    val stemmed = new Stemmer()
++      .setInputCol("words")
++      .setOutputCol("stemmed")
++
++    val countVec = new HashingTF().setNumFeatures(1000)
++      .setInputCol("stemmed").setOutputCol("rawFeatures")
++
++    val idf = new IDF().setInputCol("rawFeatures").setOutputCol("features")
++
++    val pipeline = new Pipeline()
++      .setStages(Array(tokenizer, stemmed, countVec,idf))
++
++    val transformed = pipeline
++      .fit(corpus)
++      .transform(corpus)
++    //      .show(10)
++
++//    transformed.show(10)
++
++    val kmeans = new BisectingKMeans().setK(200).setSeed(1L).setFeaturesCol("features")
++
++    kmeans.save("/home/cloudera/work/result/kmeans-BisectingKMeans-model")
++
++    kmeans.fit(transformed).transform(transformed).select("features","description","text","prediction","url")
++      .write.mode(SaveMode.Overwrite).parquet("/home/cloudera/work/result/BisectingKMeans")
++
++  }
++
++
++}
+
+============================================================
+Commit: 836c4f9c375fa3c040141f525c6cb9202b2ad3a4
+Abbreviated: 836c4f9
+Author: Sina J <sjam3000@yahoo.com>
+Date: 2018-04-03 00:13:34 -0400
+Subject: Added ingestion raw data
+Body:
+============================================================
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..88a1ba5
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,6 @@
++
++target/
++
++marjES\.iml
++
++\.idea/
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+index 0000000..f07783c
+--- /dev/null
++++ b/pom.xml
+@@ -0,0 +1,118 @@
++<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++  <modelVersion>4.0.0</modelVersion>
++  <groupId>marjES</groupId>
++  <artifactId>marjES</artifactId>
++  <version>0.0.1-SNAPSHOT</version>
++  <build>
++    <sourceDirectory>src</sourceDirectory>
++        
++        
++       
++    <plugins>
++      <plugin>
++        <artifactId>maven-compiler-plugin</artifactId>
++        <version>3.5.1</version>
++        <configuration>
++          <source>1.8</source>
++          <target>1.8</target>
++        </configuration>
++      </plugin>
++    </plugins>
++  </build>
++   <dependencies>
++   
++<dependency>
++    <groupId>org.apache.spark</groupId>
++    <artifactId>spark-core_2.11</artifactId>
++    <version>2.0.0</version>
++</dependency>
++<dependency>
++  <groupId>com.johnsnowlabs.nlp</groupId>
++  <artifactId>spark-nlp_2.11</artifactId>
++  <version>1.2.3</version>
++</dependency>
++
++<!-- https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-spark-20 -->
++<dependency>
++    <groupId>org.elasticsearch</groupId>
++    <artifactId>elasticsearch-spark-20_2.11</artifactId>
++    <version>6.1.1</version>
++</dependency>
++<!-- <dependency>
++    <groupId>org.elasticsearch</groupId>
++    <artifactId>elasticsearch-spark-20_2.11</artifactId>
++    <version>5.6.3</version>
++</dependency> -->
++
++
++<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
++<dependency>
++    <groupId>org.apache.spark</groupId>
++    <artifactId>spark-sql_2.11</artifactId>
++    <version>2.0.0</version>
++</dependency>
++<dependency>
++    <groupId>com.google.code.gson</groupId>
++    <artifactId>gson</artifactId>
++    <version>2.8.0</version>
++</dependency>
++
++<!-- https://mvnrepository.com/artifact/com.databricks/spark-csv -->
++<dependency>
++    <groupId>com.databricks</groupId>
++    <artifactId>spark-csv_2.11</artifactId>
++    <version>1.5.0</version>
++</dependency>
++
++<!-- https://mvnrepository.com/artifact/com.github.pathikrit/better-files -->
++<dependency>
++    <groupId>com.github.pathikrit</groupId>
++    <artifactId>better-files_2.11</artifactId>
++    <version>2.16.0</version>
++</dependency>
++
++ <dependency>
++    <groupId>edu.stanford.nlp</groupId>
++    <artifactId>stanford-corenlp</artifactId>
++    <version>3.8.0</version>
++</dependency>
++
++
++<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-mllib -->
++<dependency>
++    <groupId>org.apache.spark</groupId>
++    <artifactId>spark-mllib_2.11</artifactId>
++    <version>2.0.0</version>
++    <scope>provided</scope>
++</dependency>
++<dependency>
++    <groupId>edu.stanford.nlp</groupId>
++    <artifactId>stanford-corenlp</artifactId>
++    <version>3.8.0</version>
++    <classifier>models</classifier>
++</dependency>
++<dependency>
++ <groupId>edu.stanford.nlp</groupId>
++ <artifactId>stanford-parser</artifactId>
++ <version>3.8.0</version>
++</dependency>
++<dependency>
++    <groupId>org.apache.bahir</groupId>
++    <artifactId>spark-streaming-twitter_2.11</artifactId>
++    <version>2.0.0-preview</version>
++</dependency>
++<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-flume -->
++<dependency>
++    <groupId>org.apache.spark</groupId>
++    <artifactId>spark-streaming-flume_2.10</artifactId>
++    <version>0.9.0-incubating</version>
++</dependency>
++<!-- https://mvnrepository.com/artifact/org.twitter4j/twitter4j-stream -->
++<dependency>
++    <groupId>org.twitter4j</groupId>
++    <artifactId>twitter4j-stream</artifactId>
++    <version>4.0.4</version>
++</dependency>
++
++    </dependencies>
++</project>
+\ No newline at end of file
+diff --git a/src/main/scala/TrainingLDA.scala b/src/main/scala/TrainingLDA.scala
+new file mode 100644
+index 0000000..3ef776a
+--- /dev/null
++++ b/src/main/scala/TrainingLDA.scala
+@@ -0,0 +1,121 @@
++
++import org.apache.spark.SparkConf
++import org.apache.spark.ml.Pipeline
++import org.elasticsearch.spark.sql._
++import org.apache.spark.ml.feature.StopWordsRemover
++import org.apache.spark.sql.SparkSession
++
++object TrainingLDA {
++
++	def main(args: Array[String]) {
++
++    val conf = new SparkConf().setAppName("readingfromES").setMaster("local[*]")
++
++    val spark = new SparkSession.Builder()
++      .appName("SparkSessionZipsExample").config(conf)
++      .getOrCreate()
++
++    val corpus = spark
++      .read
++      .format("org.apache.spark.sql.execution.datasources.json.DefaultSource")
++      .load("/Users/sinajamshidi/news-please-repo/data/2018/02/15/nytimes.com")
++
++    corpus.show()
++
++
++		return
++
++//				val conf = new SparkConf().setAppName("readingfromES") .setMaster("local[*]")
++//				conf.set("spark.es.nodes.wan.only","true")
++//				conf.set("spark.es.nodes","52.151.31.143")
++//				conf.set("spark.es.port","9200")
++//				conf.set("spark.es.nodes.discovery","false")
++//				conf.set("spark.es.net.http.auth.user","marjadmin")
++//				conf.set("spark.es.net.http.auth.pass","Ryersonr@mz11")
++//				conf.set("spark.es.index.read.missing.as.empty","true")
++//				conf.set("es.batch.size.bytes", "300000000")
++//				conf.set("es.batch.size.entries", "10000")
++//				conf.set("es.batch.write.refresh", "false")
++//				val sc = new SparkContext(conf)
++//				val sqlContext = new org.apache.spark.sql.SQLContext(sc)
++//
++//
++//                val df = sqlContext.read.format("org.elasticsearch.spark.sql")
++//				.option("es.read.field.as.array.include","authors") //including authors as array
++//				.option("es.mapping.date.rich" ,"false") //solve date formats for as many date fields,When set "es.mapping.date.rich" to false, DataFrame schema not change to String or Long
++//				.option("es.field.read.empty.as.null","true")
++//				.option("es.index.read.missing.as.empty","true")
++//				// .option("es.read.field.as.date.include","date_download || date_modify || date_publish")
++//				.load("contentprofile/temptable")
++//
++//				import org.apache.spark.sql.functions._
++//				import sqlContext.implicits._
++//				import org.apache.spark.storage.StorageLevel
++//
++//         		df.registerTempTable("tftbl")
++//
++//				val res=sqlContext.sql("select * from tftbl")
++//
++//                //preparing all json schema for all the fetched document to be put in the pipleline
++//                	val documents = res.withColumn("allFields",concat_ws(" ",res.col("authors"),res.col("date_download"),res.col("date_modify"),
++//						res.col("date_publish"),regexp_replace(res.col("description"), "[^a-zA-Z0-9]", " "), res.col("image_url"),res.col("language")
++//						,res.col("source_domain"),
++//						regexp_replace(res.col("text"), "[^([A-Z]|[0-9]|[a-z])+$)]",""),
++//                        //may be this regex is extra as I am using an annotator in the piepline below to remove punctuations etc
++//                        res.col("title")
++//					, res.col("title_page"),res.col("title_rss"),res.col("url"))   )
++//
++//                //below you wil find couple of annotators as described here http://nlp.johnsnowlabs.com/components.html
++//                //1. annotating raw data
++//                val documentAssembler = new DocumentAssembler().setInputCol("allFields").setOutputCol("document")
++//
++//               //2. finding sentences
++//				val sentenceDetector = new SentenceDetectorModel().setInputCols(Array("document")).setOutputCol("sentence")
++//
++//                //3. regex annotator
++//				val regexTokenizer = new RegexTokenizer().setInputCols(Array("sentence")).setOutputCol("token")
++//
++//            	//4.stopword remover
++//                val stopWords = new StopWordsRemover()
++//				.setInputCol("token")
++//				.setOutputCol("token")
++//
++//            	//5.removing dirty text
++//                val normalize = new Normalizer().setInputCols(Array("token")).setOutputCol("token")
++//
++//            	//6. stemming ,snowball
++//                val  stem = new Stemmer().setInputCols(Array("token")).setOutputCol("token")
++//
++//                //7. lemmating the text
++//				val lemma = new Lemmatizer().setInputCols(Array("token")).setOutputCol("token").setLemmaDict("C:\\Users\\Syed\\workspace3\\marjES\\lemmas.txt")
++//
++//                //8. part of speech tagging, using a built in dictionary, I have uploaded dictionary in the same contentprofile marj git
++//
++//				val posTagger = new PerceptronApproach().setInputCols(Array("sentence", "token")).setOutputCol("pos").setOutputCol("pos").setCorpusPath("C:\\Users\\Syed\\workspace3\\marjES\\pos.txt")
++//
++//               //9. ready to use results
++//               	val finisher = new Finisher().setInputCols("pos").setValueSplitSymbol(" ").setAnnotationSplitSymbol(",").setOutputCols("finished")
++//				.setCleanAnnotations(true)
++//				.setIncludeKeys(true)
++//
++//                //pipeline all annotators
++//                val pipeline = new Pipeline().setStages(Array(
++//						documentAssembler,
++//						sentenceDetector,
++//						regexTokenizer,
++//						posTagger,
++//						finisher
++//						))
++//
++//                documents.show()
++//
++//                pipeline.fit(documents).transform(documents).select("*")
++//				.saveToEs("contentprofile/POS")
++//				//.show(10,false)
++//
++
++
++
++
++	}
++}
+\ No newline at end of file
+
+============================================================
+Commit: 16a535fcad11756e74e64e0d6c875686c9d2d286
+Abbreviated: 16a535f
+Author: Sina J <sjam3000@yahoo.com>
+Date: 2018-04-02 23:48:05 -0400
+Subject: Initial commit
+Body:
+============================================================
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..b927c4c
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1 @@
++RecommenderEngine
+
